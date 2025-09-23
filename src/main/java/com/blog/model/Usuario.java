@@ -1,10 +1,11 @@
-package com.blog.Model;
+package com.blog.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
 @Entity
+@Table(name = "usuarios")
 public class Usuario {
 
     @Id

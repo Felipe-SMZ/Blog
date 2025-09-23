@@ -1,7 +1,7 @@
-package com.blog.Controller;
+package com.blog.controller;
 
-import com.blog.Model.Usuario;
-import com.blog.Repository.UsuarioRepository;
+import com.blog.model.Usuario;
+import com.blog.repository.UsuarioRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
