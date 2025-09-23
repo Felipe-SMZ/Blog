@@ -2,17 +2,22 @@ package com.blog.dto;
 
 public class UsuarioResponse {
 
+    private  Long id;
     private String name;
     private String email;
-    private String password;
+
 
     public UsuarioResponse() {
     }
 
-    public UsuarioResponse(String name, String email, String password) {
+    public UsuarioResponse(Long id, String name, String email) {
+        this.id = id;
         this.name = name;
         this.email = email;
-        this.password = password;
+    }
+
+    public Long getId() {
+        return id;
     }
 
     public String getName() {
@@ -23,7 +28,4 @@ public class UsuarioResponse {
         return email;
     }
 
-    public String getPassword() {
-        return password;
-    }
 }
