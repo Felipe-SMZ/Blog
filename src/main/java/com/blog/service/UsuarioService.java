@@ -13,7 +13,7 @@ public class UsuarioService {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
-    public UsuarioRepository criarUsuario(Usuario usuario) {
+    public Usuario criarUsuario(Usuario usuario) {
         validarEmailUnico(usuario.getEmail(), null);
         return usuarioRepository.save(usuario);
     }
@@ -21,7 +21,7 @@ public class UsuarioService {
     public Usuario atualizarUsuario(Long id, Usuario novosDados) {
         Optional<Usuario> existente = usuarioRepository.findById(id);
         if (existente.isEmpty()) {
-            throw new RuntimeException("Usuário não encontrado.")
+            throw new RuntimeException("Usuário não encontrado.");
         }
         validarEmailUnico(novosDados.getEmail(), id);
         Usuario usuario = existente.get();
