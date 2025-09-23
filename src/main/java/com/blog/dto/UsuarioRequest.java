@@ -35,5 +35,5 @@ public class UsuarioRequest {
     public String getPassword() {
         return password;
     }
-    
+
 }

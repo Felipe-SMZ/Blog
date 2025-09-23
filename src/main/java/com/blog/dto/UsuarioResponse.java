@@ -1,8 +1,29 @@
 package com.blog.dto;
 
-import jakarta.validation.constraints.NotBlank;
-
 public class UsuarioResponse {
 
-    @NotBlank(message = "")
+    private String name;
+    private String email;
+    private String password;
+
+    public UsuarioResponse() {
+    }
+
+    public UsuarioResponse(String name, String email, String password) {
+        this.name = name;
+        this.email = email;
+        this.password = password;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
 }
