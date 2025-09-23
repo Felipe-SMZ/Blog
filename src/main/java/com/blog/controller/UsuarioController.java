@@ -1,67 +1,59 @@
 package com.blog.controller;
 
+import com.blog.dto.UsuarioRequest;
+import com.blog.dto.UsuarioResponse;
 import com.blog.model.Usuario;
-import com.blog.repository.UsuarioRepository;
+import com.blog.service.UsuarioService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/usuario")
 public class UsuarioController {
     @Autowired
-    private UsuarioRepository usuarioRepository;
+    private UsuarioService usuarioService;
 
     @GetMapping
-    public List<Usuario> listrUsuarios() {
-        return usuarioRepository.findAll();
+    public ResponseEntity<List<UsuarioResponse>> listarUsuarios() {
+        List<Usuario> usuarios = usuarioService.listarTodos();
+        List<UsuarioResponse> resposta = usuarios.stream()
+                .map(u -> new UsuarioResponse(u.getId(), u.getName(), u.getEmail()))
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(resposta);
     }
 
     @GetMapping("/{id}")
-    public Usuario buscarUsuario(@PathVariable Long id) {
-        return usuarioRepository.findById(id).orElse(null);
+    public ResponseEntity<UsuarioResponse> buscarUsuario(@PathVariable Long id) {
+        Usuario usuario = usuarioService.buscarPorId(id);
+        UsuarioResponse resposta = new UsuarioResponse(usuario.getId(), usuario.getName(), usuario.getEmail());
+        return ResponseEntity.ok(resposta);
     }
 
     @PostMapping
-    public ResponseEntity<?> criarUsuario(@RequestBody @Valid Usuario usuario) {
-        if (usuarioRepository.existsByEmail(usuario.getEmail())) {
-            return ResponseEntity.badRequest().body("E-mail já cadastrado");
-        }
-        Usuario salvo = usuarioRepository.save(usuario);
-        return ResponseEntity.ok(salvo);
+    public ResponseEntity<UsuarioResponse> criarUsuario(@RequestBody @Valid UsuarioRequest request) {
+        Usuario usuario = usuarioService.criarUsuario(request);
+        UsuarioResponse resposta = new UsuarioResponse(usuario.getId(), usuario.getName(), usuario.getEmail());
+        return ResponseEntity.ok(resposta);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> atualizarUsuario(@PathVariable Long id, @RequestBody Usuario novosDados) {
-        Optional<Usuario> usuarioExistente = usuarioRepository.findById(id);
-        if (usuarioExistente.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-
-        Optional<Usuario> usuarioComMesmoEmail = usuarioRepository.findByEmail(novosDados.getEmail());
-        if (usuarioComMesmoEmail.isPresent() && !usuarioComMesmoEmail.get().getId().equals(id)) {
-            return ResponseEntity.badRequest().body("E-mail já está em uso");
-        }
-        Usuario usuario = usuarioExistente.get();
-        usuario.setName(novosDados.getName());
-        usuario.setEmail(novosDados.getEmail());
-        usuario.setPassword(novosDados.getPassword());
-
-        Usuario atualizado = usuarioRepository.save(usuario);
-        return ResponseEntity.ok(atualizado);
+    public ResponseEntity<UsuarioResponse> atualizarUsuario(@PathVariable Long id, @RequestBody UsuarioRequest request) {
+        Usuario usuario = usuaarioService.atualizarUsuario(id, request);
+        UsuarioResponse resposta = new UsuarioResponse(usuario.getId(), usuario.getName(), usuario.getEmail());
+        return ResponseEntity.ok(resposta);
     }
+
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletarUsuario(@PathVariable Long id) {
-        if (usuarioRepository.existsById(id)) {
-            usuarioRepository.deleteById(id);
-            return ResponseEntity.noContent().build();
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        usuarioService.deletarUsuario(id);
+        return ResponseEntity.noContent().build();
     }
+
 }
+
