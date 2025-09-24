@@ -5,6 +5,7 @@ import com.blog.exception.EmailDuplicadoException;
 import com.blog.model.Usuario;
 import com.blog.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,9 +26,13 @@ public class UsuarioService {
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
     }
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     public Usuario criarUsuario(UsuarioRequest dto) {
         validarEmailUnico(dto.getEmail(), null);
-        Usuario usuario = new Usuario(dto.getName(), dto.getEmail(), dto.getPassword());
+        String senhaCriptografada = passwordEncoder.encode(dto.getPassword());
+        Usuario usuario = new Usuario(dto.getName(), dto.getEmail(), senhaCriptografada);
         return usuarioRepository.save(usuario);
     }
 
@@ -42,7 +47,7 @@ public class UsuarioService {
         Usuario usuario = existente.get();
         usuario.setName(dto.getName());
         usuario.setEmail(dto.getEmail());
-        usuario.setPassword(dto.getPassword());
+        usuario.setPassword(passwordEncoder.encode(dto.getPassword()));
 
         return usuarioRepository.save(usuario);
 
