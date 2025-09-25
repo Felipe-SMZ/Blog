@@ -5,6 +5,7 @@ import com.blog.exception.EmailDuplicadoException;
 import com.blog.model.Usuario;
 import com.blog.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -61,8 +62,10 @@ public class UsuarioService {
     }
 
     public void deletarUsuario(Long id) {
-        if (!usuarioRepository.existsById(id)) {
-            throw new RuntimeException("Usuário não encontrado");
+        Usuario usuarioLogado = (Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        if (!usuarioLogado.getId().equals(id)) {
+            throw new RuntimeException("Você não pode deletar outro usuário");
         }
         usuarioRepository.deleteById(id);
     }
