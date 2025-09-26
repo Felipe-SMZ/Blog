@@ -29,31 +29,31 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
-        // System.out.println("🔒 JwtAuthenticationFilter ativado");
-        // System.out.println("Authorization Header: " + request.getHeader("Authorization"));
-
         String authHeader = request.getHeader("Authorization");
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String token = authHeader.substring(7);
-            String email = jwtUtil.extrairEmail(token);
+            try {
+                String email = jwtUtil.extrairEmail(token);
 
-            if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                Optional<Usuario> usuario = usuarioRepository.findByEmail(email);
+                if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                    Optional<Usuario> usuario = usuarioRepository.findByEmail(email);
 
-                if (usuario.isPresent()) {
-                    System.out.println("✅ Usuário autenticado: " + usuario.get().getEmail());
-
-                    Usuario userDetails = usuario.get();
-                    UsernamePasswordAuthenticationToken authToken =
-                            new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                    SecurityContextHolder.getContext().setAuthentication(authToken);
+                    if (usuario.isPresent()) {
+                        Usuario userDetails = usuario.get();
+                        UsernamePasswordAuthenticationToken authToken =
+                                new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                        authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                        SecurityContextHolder.getContext().setAuthentication(authToken);
+                    }
                 }
+            } catch (io.jsonwebtoken.JwtException ex) {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.getWriter().write("Token inválido");
+                return;
             }
         }
 
         filterChain.doFilter(request, response);
     }
-
 }
