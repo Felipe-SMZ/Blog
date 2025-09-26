@@ -7,6 +7,7 @@ import com.blog.service.UsuarioService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -53,6 +54,24 @@ public class UsuarioController {
     public ResponseEntity<Void> deletarUsuario(@PathVariable Long id) {
         usuarioService.deletarUsuario(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<UsuarioResponse> getMe(@AuthenticationPrincipal Usuario usuarioLogado) {
+
+        //Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        //System.out.println("Auth class: " + auth.getClass());
+        //System.out.println("Principal class: " + auth.getPrincipal().getClass());
+        //System.out.println("Authorities: " + auth.getAuthorities());
+        //System.out.println("Is Authenticated: " + auth.isAuthenticated());
+
+        UsuarioResponse resposta = new UsuarioResponse(
+                usuarioLogado.getId(),
+                usuarioLogado.getName(),
+                usuarioLogado.getEmail()
+        );
+        return ResponseEntity.ok(resposta);
+
     }
 
 }
