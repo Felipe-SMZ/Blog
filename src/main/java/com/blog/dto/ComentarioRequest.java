@@ -12,13 +12,8 @@ public class ComentarioRequest {
     public ComentarioRequest() {
     }
 
-    public ComentarioRequest(Long usuarioId, String comentario) {
-        this.usuarioId = usuarioId;
+    public ComentarioRequest(String comentario) {
         this.comentario = comentario;
-    }
-
-    public Long getUsuarioId() {
-        return usuarioId;
     }
 
     public String getComentario() {
