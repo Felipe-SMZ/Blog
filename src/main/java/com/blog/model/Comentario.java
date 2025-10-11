@@ -38,9 +38,6 @@ public class Comentario {
     public Comentario() {
     }
 
-    public Comentario(Usuario usuario, String comentario, Object o, Object object) {
-    }
-
     public Comentario(Post post, String comentario, Usuario usuario) {
         this.post = post;
         this.comentario = comentario;
