@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class PostService {
@@ -46,7 +45,10 @@ public class PostService {
                 .getPrincipal();
 
         Post post = postRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Post não encontrado"));
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Post não encontrado"
+                ));
 
         // ✅ VERIFICA SE É O DONO DO POST
         if (!post.getUsuario().getId().equals(usuarioLogado.getId())) {
@@ -62,28 +64,36 @@ public class PostService {
     }
 
     public void excluirPost(Long id) {
-        Usuario usuarioLogado = (Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Usuario usuarioLogado = (Usuario) SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getPrincipal();
 
         Post post = postRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Post não encontrado"));
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Post não encontrado"
+                ));
+
         if (!post.getUsuario().getId().equals(usuarioLogado.getId())) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Você não pode excluir este post");
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "Você não pode excluir este post"
+            );
         }
 
         postRepository.deleteById(id);
     }
 
+
     public List<Post> listarTodosPosts() {
         return postRepository.findAll();
     }
 
-    public Post buscarPost(Long id) {
-        Optional<Post> post = Optional.ofNullable(postRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Post não encontrado")));
-        return post.get();
-    }
-
     public Post buscarPorId(Long id) {
-        return postRepository.findById(id).orElseThrow(() -> new RuntimeException("Post não encontrado"));
+        return postRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Post não encontrado"
+                ));
     }
 }
