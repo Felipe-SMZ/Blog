@@ -1,12 +1,9 @@
 package com.blog.dto;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 public class ComentarioRequest {
-    @NotNull
-    private Long usuarioId;
 
     @NotBlank(message = "O comentário é obrigatório")
     @Size(min = 1, max = 500, message = "O conteúdo deve ter no máximo 500 caracteres")
