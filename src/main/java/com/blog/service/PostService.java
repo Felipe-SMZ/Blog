@@ -48,7 +48,7 @@ public class PostService {
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Post não encontrado"));
         if (!post.getUsuario().getId().equals(usuarioLogado.getId())) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Você nçao pode excluir este post");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Você não pode excluir este post");
         }
 
         postRepository.deleteById(id);
