@@ -25,6 +25,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll()// libera login
                         .requestMatchers(HttpMethod.POST, "/usuarios").permitAll() // cadastro não precisa de token
+                        .requestMatchers(HttpMethod.GET, "/posts/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/comentarios/**").permitAll()
                         .anyRequest().authenticated() // protege o resto
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
