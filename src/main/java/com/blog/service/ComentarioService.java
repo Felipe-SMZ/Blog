@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ComentarioService {
@@ -30,11 +29,19 @@ public class ComentarioService {
     private UsuarioRepository usuarioRepository;
 
     public Comentario cadastrarComentario(Long postId, ComentarioRequest comentarioRequest) {
-        Usuario usuario = usuarioRepository.findById(comentarioRequest.getUsuarioId())
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+        // Pega usuário autenticado
+        Usuario usuarioLogado = (Usuario) SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getPrincipal();
+
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new RuntimeException("Post não encontrado"));
-        Comentario comentario = new Comentario(post, comentarioRequest.getComentario(), usuario);
+
+        Comentario comentario = new Comentario(
+                post,
+                comentarioRequest.getComentario(),
+                usuarioLogado
+        );
         return comentarioRepository.save(comentario);
     }
 
@@ -48,11 +55,21 @@ public class ComentarioService {
     }
 
     public Comentario atualizarComentario(Long id, ComentarioRequest comentarioRequest) {
-        Optional<Comentario> existente = comentarioRepository.findById(id);
-        if (existente.isEmpty()) {
-            throw new RuntimeException("Post não encontrado");
+        Usuario usuarioLogado = (Usuario) SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getPrincipal();
+
+        Comentario comentario = comentarioRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Comentário não encontrado"));
+
+        // ✅ VERIFICA SE É O DONO DO COMENTÁRIO
+        if (!comentario.getUsuario().getId().equals(usuarioLogado.getId())) {
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "Você não pode editar este comentário"
+            );
         }
-        Comentario comentario = existente.get();
+
         comentario.setComentario(comentarioRequest.getComentario());
         return comentarioRepository.save(comentario);
     }
