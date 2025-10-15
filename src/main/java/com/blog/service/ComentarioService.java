@@ -1,18 +1,16 @@
 package com.blog.service;
 
 import com.blog.dto.ComentarioRequest;
+import com.blog.exception.ForbiddenException;
+import com.blog.exception.ResourceNotFoundException;
 import com.blog.model.Comentario;
 import com.blog.model.Post;
 import com.blog.model.Usuario;
 import com.blog.repository.ComentarioRepository;
 import com.blog.repository.PostRepository;
-import com.blog.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -25,9 +23,6 @@ public class ComentarioService {
     @Autowired
     private PostRepository postRepository;
 
-    @Autowired
-    private UsuarioRepository usuarioRepository;
-
     public Comentario cadastrarComentario(Long postId, ComentarioRequest comentarioRequest) {
         // Pega usuário autenticado
         Usuario usuarioLogado = (Usuario) SecurityContextHolder.getContext()
@@ -35,7 +30,7 @@ public class ComentarioService {
                 .getPrincipal();
 
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new RuntimeException("Post não encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Post", "id", postId));
 
         Comentario comentario = new Comentario(
                 post,
@@ -51,7 +46,7 @@ public class ComentarioService {
 
     public Comentario buscarComentario(Long id) {
         return comentarioRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Comentário não encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Comentário", "id", id));
     }
 
     public Comentario atualizarComentario(Long id, ComentarioRequest comentarioRequest) {
@@ -60,14 +55,11 @@ public class ComentarioService {
                 .getPrincipal();
 
         Comentario comentario = comentarioRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Comentário não encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Comentário", "id", id));
 
-        // ✅ VERIFICA SE É O DONO DO COMENTÁRIO
+        // Verifica se é o dono do comentário
         if (!comentario.getUsuario().getId().equals(usuarioLogado.getId())) {
-            throw new ResponseStatusException(
-                    HttpStatus.FORBIDDEN,
-                    "Você não pode editar este comentário"
-            );
+            throw new ForbiddenException("comentário", "editar");
         }
 
         comentario.setComentario(comentarioRequest.getComentario());
@@ -75,15 +67,16 @@ public class ComentarioService {
     }
 
     public void excluirComentario(Long id) {
-        String username = ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
-
-        Usuario usuarioLogado = usuarioRepository.findByEmail(username)
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+        Usuario usuarioLogado = (Usuario) SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getPrincipal();
 
         Comentario comentario = buscarComentario(id);
+
         if (!comentario.getUsuario().getId().equals(usuarioLogado.getId())) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Você não pode excluir este comentário");
+            throw new ForbiddenException("comentário", "deletar");
         }
+
         comentarioRepository.deleteById(id);
     }
 }

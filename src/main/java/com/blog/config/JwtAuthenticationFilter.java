@@ -1,7 +1,9 @@
 package com.blog.config;
 
+import com.blog.exception.InvalidTokenException;
 import com.blog.model.Usuario;
 import com.blog.repository.UsuarioRepository;
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -42,15 +44,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     if (usuario.isPresent()) {
                         Usuario userDetails = usuario.get();
                         UsernamePasswordAuthenticationToken authToken =
-                                new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                                new UsernamePasswordAuthenticationToken(
+                                        userDetails,
+                                        null,
+                                        userDetails.getAuthorities()
+                                );
                         authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                         SecurityContextHolder.getContext().setAuthentication(authToken);
                     }
                 }
-            } catch (io.jsonwebtoken.JwtException ex) {
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                response.getWriter().write("Token inválido");
-                return;
+            } catch (JwtException ex) {
+                // ✅ Lança exceção customizada
+                throw new InvalidTokenException(ex.getMessage());
             }
         }
 

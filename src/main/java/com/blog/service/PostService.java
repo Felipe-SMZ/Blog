@@ -1,15 +1,14 @@
 package com.blog.service;
 
 import com.blog.dto.PostRequest;
+import com.blog.exception.ForbiddenException;
+import com.blog.exception.ResourceNotFoundException;
 import com.blog.model.Post;
 import com.blog.model.Usuario;
 import com.blog.repository.PostRepository;
-import com.blog.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -18,10 +17,6 @@ public class PostService {
 
     @Autowired
     private PostRepository postRepository;
-
-    @Autowired
-    private UsuarioRepository usuarioRepository;
-
 
     public Post cadastrarPost(PostRequest request) {
         // Pega o usuário autenticado do contexto de segurança
@@ -45,17 +40,11 @@ public class PostService {
                 .getPrincipal();
 
         Post post = postRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND,
-                        "Post não encontrado"
-                ));
+                .orElseThrow(() -> new ResourceNotFoundException("Post", "id", id));
 
-        // ✅ VERIFICA SE É O DONO DO POST
+        // Verifica se é o dono do post
         if (!post.getUsuario().getId().equals(usuarioLogado.getId())) {
-            throw new ResponseStatusException(
-                    HttpStatus.FORBIDDEN,
-                    "Você não pode editar este post"
-            );
+            throw new ForbiddenException("post", "editar");
         }
 
         post.setTitulo(request.getTitulo());
@@ -69,21 +58,14 @@ public class PostService {
                 .getPrincipal();
 
         Post post = postRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND,
-                        "Post não encontrado"
-                ));
+                .orElseThrow(() -> new ResourceNotFoundException("Post", "id", id));
 
         if (!post.getUsuario().getId().equals(usuarioLogado.getId())) {
-            throw new ResponseStatusException(
-                    HttpStatus.FORBIDDEN,
-                    "Você não pode excluir este post"
-            );
+            throw new ForbiddenException("post", "deletar");
         }
 
         postRepository.deleteById(id);
     }
-
 
     public List<Post> listarTodosPosts() {
         return postRepository.findAll();
@@ -91,9 +73,6 @@ public class PostService {
 
     public Post buscarPorId(Long id) {
         return postRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND,
-                        "Post não encontrado"
-                ));
+                .orElseThrow(() -> new ResourceNotFoundException("Post", "id", id));
     }
 }
