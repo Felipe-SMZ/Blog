@@ -6,6 +6,7 @@ import com.blog.exception.ResourceNotFoundException;
 import com.blog.model.Post;
 import com.blog.model.Usuario;
 import com.blog.repository.PostRepository;
+import com.blog.repository.UsuarioRepository;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -16,8 +17,12 @@ public class PostService {
 
 
     private final PostRepository postRepository;
+    private final UsuarioRepository usuarioRepository;
 
-    public PostService(PostRepository postRepository, UsuarioRepository usuarioRepository) {
+    public PostService(
+            PostRepository postRepository,
+            UsuarioRepository usuarioRepository
+    ) {
         this.postRepository = postRepository;
         this.usuarioRepository = usuarioRepository;
     }
