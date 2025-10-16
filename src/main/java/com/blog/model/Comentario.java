@@ -1,5 +1,7 @@
 package com.blog.model;
 
+import com.blog.dto.ComentarioResponse;
+import com.blog.dto.UsuarioResumoResponse;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -82,5 +84,20 @@ public class Comentario {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    // Converte para ComentarioResponse
+    public ComentarioResponse toResponse() {
+        return new ComentarioResponse(
+                this.getId(),
+                new UsuarioResumoResponse(
+                        this.getUsuario().getId(),
+                        this.getUsuario().getName(),
+                        this.getUsuario().getEmail()
+                ),
+                this.getComentario(),
+                this.getCreatedAt(),
+                this.getUpdatedAt()
+        );
     }
 }

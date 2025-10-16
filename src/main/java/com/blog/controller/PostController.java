@@ -39,18 +39,11 @@ public class PostController {
     @GetMapping
     public ResponseEntity<List<PostResponse>> listarTodosPost() {
         List<Post> posts = postService.listarTodosPosts();
-        List<PostResponse> resposta = posts.stream()
-                .map(post -> new PostResponse(
-                        post.getId(),
-                        post.getUsuario(),
-                        post.getTitulo(),
-                        post.getConteudo(),
-                        post.getCreatedAt(),
-                        post.getUpdatedAt()
-                ))
-                .toList();
-
-        return ResponseEntity.ok(resposta);
+        return ResponseEntity.ok(
+                posts.stream()
+                        .map(Post::toResponse)
+                        .toList()
+        );
     }
 
     @GetMapping("/{id}")

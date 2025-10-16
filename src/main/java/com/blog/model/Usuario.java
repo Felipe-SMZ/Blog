@@ -1,5 +1,6 @@
 package com.blog.model;
 
+import com.blog.dto.UsuarioResponse;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -101,5 +102,13 @@ public class Usuario implements UserDetails {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public UsuarioResponse toResponse() {
+        return new UsuarioResponse(
+                this.getId(),
+                this.getName(),
+                this.getEmail()
+        );
     }
 }

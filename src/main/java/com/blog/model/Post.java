@@ -1,5 +1,6 @@
 package com.blog.model;
 
+import com.blog.dto.PostResponse;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -90,4 +91,17 @@ public class Post {
     public void setId(Long id) {
         this.id = id;
     }
+
+    // Metodo que converte para DTO
+    public PostResponse toResponse() {
+        return new PostResponse(
+                this.getId(),
+                this.getUsuario(),
+                this.getTitulo(),
+                this.getConteudo(),
+                this.getCreatedAt(),
+                this.getUpdatedAt()
+        );
+    }
+
 }
