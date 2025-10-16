@@ -22,18 +22,7 @@ public class PostController {
 
     @PostMapping
     public ResponseEntity<PostResponse> cadastrarPost(@RequestBody @Valid PostRequest postRequest) {
-        Post post = postService.cadastrarPost(postRequest);
-        PostResponse resposta = new PostResponse(
-                post.getId(),
-                post.getUsuario(),
-                post.getTitulo(),
-                post.getConteudo(),
-                post.getCreatedAt(),
-                post.getUpdatedAt()
-        );
-        return ResponseEntity.ok(resposta);
-
-
+        return ResponseEntity.ok(postService.cadastrarPost(postRequest).toResponse());
     }
 
     @GetMapping
@@ -42,36 +31,17 @@ public class PostController {
         return ResponseEntity.ok(
                 posts.stream()
                         .map(Post::toResponse)
-                        .toList()
-        );
+                        .toList());
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<PostResponse> buscarPost(@PathVariable Long id) {
-        Post post = postService.buscarPorId(id);
-        PostResponse resposta = new PostResponse(
-                post.getId(),
-                post.getUsuario(),
-                post.getTitulo(),
-                post.getConteudo(),
-                post.getCreatedAt(),
-                post.getUpdatedAt()
-        );
-        return ResponseEntity.ok(resposta);
+        return ResponseEntity.ok(postService.buscarPorId(id).toResponse());
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<PostResponse> atualizarPost(@PathVariable Long id, @RequestBody @Valid PostRequest postRequest) {
-        Post post = postService.atualizarPost(id, postRequest);
-        PostResponse resposta = new PostResponse(
-                post.getId(),
-                post.getUsuario(),
-                post.getTitulo(),
-                post.getConteudo(),
-                post.getCreatedAt(),
-                post.getUpdatedAt()
-        );
-        return ResponseEntity.ok(resposta);
+        return ResponseEntity.ok(postService.atualizarPost(id, postRequest).toResponse());
     }
 
     @DeleteMapping("/{id}")

@@ -10,7 +10,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/usuarios")
@@ -24,32 +23,25 @@ public class UsuarioController {
 
     @GetMapping
     public ResponseEntity<List<UsuarioResponse>> listarUsuarios() {
-        List<Usuario> usuarios = usuarioService.listarTodos();
-        List<UsuarioResponse> resposta = usuarios.stream()
-                .map(u -> new UsuarioResponse(u.getId(), u.getName(), u.getEmail()))
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(resposta);
+        return ResponseEntity.ok(
+                usuarioService.listarTodos().stream()
+                        .map(Usuario::toResponse)
+                        .toList());
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<UsuarioResponse> buscarUsuario(@PathVariable Long id) {
-        Usuario usuario = usuarioService.buscarPorId(id);
-        UsuarioResponse resposta = new UsuarioResponse(usuario.getId(), usuario.getName(), usuario.getEmail());
-        return ResponseEntity.ok(resposta);
+        return ResponseEntity.ok(usuarioService.buscarPorId(id).toResponse());
     }
 
     @PostMapping
     public ResponseEntity<UsuarioResponse> criarUsuario(@RequestBody @Valid UsuarioRequest request) {
-        Usuario usuario = usuarioService.criarUsuario(request);
-        UsuarioResponse resposta = new UsuarioResponse(usuario.getId(), usuario.getName(), usuario.getEmail());
-        return ResponseEntity.ok(resposta);
+        return ResponseEntity.ok(usuarioService.criarUsuario(request).toResponse());
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<UsuarioResponse> atualizarUsuario(@PathVariable Long id, @RequestBody UsuarioRequest request) {
-        Usuario usuario = usuarioService.atualizarUsuario(id, request);
-        UsuarioResponse resposta = new UsuarioResponse(usuario.getId(), usuario.getName(), usuario.getEmail());
-        return ResponseEntity.ok(resposta);
+        return ResponseEntity.ok(usuarioService.atualizarUsuario(id, request).toResponse());
     }
 
 
@@ -61,20 +53,7 @@ public class UsuarioController {
 
     @GetMapping("/me")
     public ResponseEntity<UsuarioResponse> getMe(@AuthenticationPrincipal Usuario usuarioLogado) {
-
-        //Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        //System.out.println("Auth class: " + auth.getClass());
-        //System.out.println("Principal class: " + auth.getPrincipal().getClass());
-        //System.out.println("Authorities: " + auth.getAuthorities());
-        //System.out.println("Is Authenticated: " + auth.isAuthenticated());
-
-        UsuarioResponse resposta = new UsuarioResponse(
-                usuarioLogado.getId(),
-                usuarioLogado.getName(),
-                usuarioLogado.getEmail()
-        );
-        return ResponseEntity.ok(resposta);
-
+        return ResponseEntity.ok(usuarioLogado.toResponse());
     }
 
 }
