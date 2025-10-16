@@ -22,10 +22,10 @@ public class Comentario {
     private String comentario;
 
     @Column(name = "created_at")
-    private LocalDateTime CreatedAt;
+    private LocalDateTime createdAt;
 
     @Column(name = "updated_at")
-    private LocalDateTime UpdatedAt;
+    private LocalDateTime updatedAt;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "usuario_id")
@@ -33,8 +33,8 @@ public class Comentario {
 
     @PrePersist
     protected void onCreate() {
-        CreatedAt = LocalDateTime.now();
-        UpdatedAt = LocalDateTime.now();
+        createdAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
     }
 
     public Comentario() {
@@ -75,11 +75,11 @@ public class Comentario {
     }
 
     public LocalDateTime getCreatedAt() {
-        return CreatedAt;
+        return createdAt;
     }
 
     public LocalDateTime getUpdatedAt() {
-        return UpdatedAt;
+        return updatedAt;
     }
 
     public void setId(Long id) {

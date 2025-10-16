@@ -8,10 +8,10 @@ import com.blog.model.Post;
 import com.blog.model.Usuario;
 import com.blog.repository.ComentarioRepository;
 import com.blog.repository.PostRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class ComentarioService {
@@ -45,8 +45,8 @@ public class ComentarioService {
         return comentarioRepository.save(comentario);
     }
 
-    public List<Comentario> listarTodosComentario() {
-        return comentarioRepository.findAll();
+    public Page<Comentario> listarTodosComentario(Pageable pageable) {
+        return comentarioRepository.findAll(pageable);
     }
 
     public Comentario buscarComentario(Long id) {

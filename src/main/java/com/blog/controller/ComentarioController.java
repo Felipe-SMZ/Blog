@@ -2,13 +2,12 @@ package com.blog.controller;
 
 import com.blog.dto.ComentarioRequest;
 import com.blog.dto.ComentarioResponse;
-import com.blog.model.Comentario;
 import com.blog.service.ComentarioService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/comentarios")
@@ -29,10 +28,9 @@ public class ComentarioController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ComentarioResponse>> listarTodosComentario() {
-        return ResponseEntity.ok(comentarioService.listarTodosComentario().stream()
-                .map(Comentario::toResponse)
-                .toList());
+    public ResponseEntity<Page<ComentarioResponse>> listarTodosComentario(Pageable pageable) {
+        return ResponseEntity.ok(comentarioService.listarTodosComentario(pageable).map(comentario -> comentario.toResponse())
+        );
     }
 
     @GetMapping("/{id}")
