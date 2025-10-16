@@ -8,7 +8,6 @@ import com.blog.model.Post;
 import com.blog.model.Usuario;
 import com.blog.repository.ComentarioRepository;
 import com.blog.repository.PostRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -17,11 +16,17 @@ import java.util.List;
 @Service
 public class ComentarioService {
 
-    @Autowired
-    private ComentarioRepository comentarioRepository;
+    private final ComentarioRepository comentarioRepository;
 
-    @Autowired
-    private PostRepository postRepository;
+    private final PostRepository postRepository;
+
+    public ComentarioService(
+            ComentarioRepository comentarioRepository,
+            PostRepository postRepository
+    ) {
+        this.comentarioRepository = comentarioRepository;
+        this.postRepository = postRepository;
+    }
 
     public Comentario cadastrarComentario(Long postId, ComentarioRequest comentarioRequest) {
         // Pega usuário autenticado
