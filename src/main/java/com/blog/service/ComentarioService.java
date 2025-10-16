@@ -84,4 +84,8 @@ public class ComentarioService {
 
         comentarioRepository.deleteById(id);
     }
+
+    public Page<Comentario> listarComentariosPorPost(Long postId, Pageable pageable) {
+        return comentarioRepository.findByPostId(postId, pageable);
+    }
 }

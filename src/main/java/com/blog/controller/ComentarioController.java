@@ -48,4 +48,9 @@ public class ComentarioController {
         comentarioService.excluirComentario(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/post/{postId}")
+    public ResponseEntity<Page<ComentarioResponse>> listarComentariosPorPost(@PathVariable Long postId, Pageable pageable) {
+        return ResponseEntity.ok(comentarioService.listarComentariosPorPost(postId, pageable).map(comentario -> comentario.toResponse()));
+    }
 }
