@@ -2,13 +2,12 @@ package com.blog.controller;
 
 import com.blog.dto.PostRequest;
 import com.blog.dto.PostResponse;
-import com.blog.model.Post;
 import com.blog.service.PostService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/posts")
@@ -26,12 +25,8 @@ public class PostController {
     }
 
     @GetMapping
-    public ResponseEntity<List<PostResponse>> listarTodosPost() {
-        List<Post> posts = postService.listarTodosPosts();
-        return ResponseEntity.ok(
-                posts.stream()
-                        .map(Post::toResponse)
-                        .toList());
+    public ResponseEntity<Page<PostResponse>> listarTodosPost(Pageable pageable) {
+        return ResponseEntity.ok(postService.listarTodosPosts(pageable).map(post -> post.toResponse()));
     }
 
     @GetMapping("/{id}")

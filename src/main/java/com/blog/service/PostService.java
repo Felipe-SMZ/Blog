@@ -7,6 +7,8 @@ import com.blog.model.Post;
 import com.blog.model.Usuario;
 import com.blog.repository.PostRepository;
 import com.blog.repository.UsuarioRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +27,10 @@ public class PostService {
     ) {
         this.postRepository = postRepository;
         this.usuarioRepository = usuarioRepository;
+    }
+
+    public Page<Post> listarTodosPosts(Pageable pageable) {
+        return postRepository.findAll(pageable);
     }
 
     public Post cadastrarPost(PostRequest request) {
