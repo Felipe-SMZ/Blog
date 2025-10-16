@@ -6,7 +6,6 @@ import com.blog.exception.ResourceNotFoundException;
 import com.blog.model.Post;
 import com.blog.model.Usuario;
 import com.blog.repository.PostRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -15,8 +14,13 @@ import java.util.List;
 @Service
 public class PostService {
 
-    @Autowired
-    private PostRepository postRepository;
+
+    private final PostRepository postRepository;
+
+    public PostService(PostRepository postRepository, UsuarioRepository usuarioRepository) {
+        this.postRepository = postRepository;
+        this.usuarioRepository = usuarioRepository;
+    }
 
     public Post cadastrarPost(PostRequest request) {
         // Pega o usuário autenticado do contexto de segurança
