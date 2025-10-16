@@ -90,4 +90,19 @@ public class PostService {
         return postRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Post", "id", id));
     }
+
+    // metodos busca por titulo
+    public Page<Post> buscarPorTitulo(String titulo, Pageable pageable) {
+        return postRepository.findByTituloContainingIgnoreCase(titulo, pageable);
+    }
+
+    // metodos busca por conteudo
+    public Page<Post> buscarPorConteudo(String conteudo, Pageable pageable) {
+        return postRepository.findByConteudoContainingIgnoreCase(conteudo, pageable);
+    }
+
+    // filtrar por usuario
+    public Page<Post> buscarPorUsuario(Long usuarioId, Pageable pageable) {
+        return postRepository.findByUsuarioId(usuarioId, pageable);
+    }
 }
