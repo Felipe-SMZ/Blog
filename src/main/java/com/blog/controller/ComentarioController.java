@@ -6,7 +6,6 @@ import com.blog.dto.UsuarioResumoResponse;
 import com.blog.model.Comentario;
 import com.blog.service.ComentarioService;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,8 +15,12 @@ import java.util.List;
 @RequestMapping("/comentarios")
 public class ComentarioController {
 
-    @Autowired
-    private ComentarioService comentarioService;
+
+    private final ComentarioService comentarioService;
+
+    public ComentarioController(ComentarioService comentarioService) {
+        this.comentarioService = comentarioService;
+    }
 
     @PostMapping("/post/{postId}")
     public ResponseEntity<ComentarioResponse> cadastrarComentario(
