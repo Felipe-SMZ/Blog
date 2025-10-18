@@ -75,7 +75,10 @@ public class PostService {
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Post", "id", id));
 
-        if (!post.getUsuario().getId().equals(usuarioLogado.getId())) {
+        boolean ehDono = post.getUsuario().getId().equals(usuarioLogado.getId());
+        boolean ehAdmin = usuarioLogado.isAdmin();
+
+        if (!ehDono && !ehAdmin) {
             throw new ForbiddenException("post", "deletar");
         }
 

@@ -82,4 +82,8 @@ public class UsuarioService {
 
         usuarioRepository.deleteById(id);
     }
+
+    public Usuario salvar(Usuario usuario) {
+        return usuarioRepository.save(usuario);
+    }
 }

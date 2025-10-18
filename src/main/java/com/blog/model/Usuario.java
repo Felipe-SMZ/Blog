@@ -31,6 +31,11 @@ public class Usuario implements UserDetails {
     @NotBlank(message = "A senha é obrigatória")
     private String password;
 
+    // Define o papel do usuário com um valor padrão
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Role role = Role.USER; // Define o papel padrão como USER
+
     public Usuario() {
     }
 
@@ -40,9 +45,18 @@ public class Usuario implements UserDetails {
         this.password = password;
     }
 
+    // Métodos auxiliares para verificar o papel do usuário
+    public boolean isAdmin() {
+        return this.role == Role.ADMIN;
+    }
+
+    public boolean isModerator() {
+        return this.role == Role.MODERATOR;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_USER"));
+        return List.of(new SimpleGrantedAuthority("ROLE_" + this.role.name()));
     }
 
 
@@ -76,6 +90,15 @@ public class Usuario implements UserDetails {
         return true;
     }
 
+    public UsuarioResponse toResponse() {
+        return new UsuarioResponse(
+                this.getId(),
+                this.getName(),
+                this.getEmail()
+        );
+    }
+
+    // Getters e Setters
     public String getName() {
         return name;
     }
@@ -104,11 +127,13 @@ public class Usuario implements UserDetails {
         this.id = id;
     }
 
-    public UsuarioResponse toResponse() {
-        return new UsuarioResponse(
-                this.getId(),
-                this.getName(),
-                this.getEmail()
-        );
+    public Role getRole() {
+        return role;
     }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
+
 }

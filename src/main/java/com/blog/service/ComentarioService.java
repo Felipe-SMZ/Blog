@@ -78,7 +78,10 @@ public class ComentarioService {
 
         Comentario comentario = buscarComentario(id);
 
-        if (!comentario.getUsuario().getId().equals(usuarioLogado.getId())) {
+        boolean ehDono = comentario.getUsuario().getId().equals(usuarioLogado.getId());
+        boolean ehAdminOuModerador = usuarioLogado.isAdmin() || usuarioLogado.isModerator();
+
+        if (!ehDono && !ehAdminOuModerador) {
             throw new ForbiddenException("comentário", "deletar");
         }
 
