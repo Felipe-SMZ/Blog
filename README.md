@@ -105,7 +105,7 @@ blog completo, incluindo autenticação segura, sistema de permissões e recurso
 ### Build & Deploy
 
 - **Maven** - Gerenciamento de dependências
-- **Docker** - Containerização (opcional)
+- **Docker** - Containerização 
 
 ## 📦 Pré-requisitos
 
