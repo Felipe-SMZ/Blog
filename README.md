@@ -447,7 +447,7 @@ Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para ma
 **Felipe Shimizu**
 
 - GitHub: [Felipe-SMZ](https://github.com/Felipe-SMZ)
-- LinkedIn: [Felipe Shimizu](www.linkedin.com/in/felipesshimizu)
+- LinkedIn: [https://www.linkedin.com/in/felipesshimizu]
 
 
 ---
