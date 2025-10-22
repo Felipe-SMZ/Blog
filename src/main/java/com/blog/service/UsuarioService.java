@@ -2,11 +2,10 @@ package com.blog.service;
 
 import com.blog.dto.UsuarioRequest;
 import com.blog.exception.BusinessException;
-import com.blog.exception.ForbiddenException;
 import com.blog.exception.ResourceNotFoundException;
 import com.blog.model.Usuario;
 import com.blog.repository.UsuarioRepository;
-import org.springframework.security.core.context.SecurityContextHolder;
+import com.blog.security.SecurityUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -16,15 +15,18 @@ import java.util.List;
 public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
-
     private final PasswordEncoder passwordEncoder;
+    private final SecurityUtils securityUtils;
+
 
     public UsuarioService(
             UsuarioRepository usuarioRepository,
-            PasswordEncoder passwordEncoder
+            PasswordEncoder passwordEncoder,
+            SecurityUtils securityUtils
     ) {
         this.usuarioRepository = usuarioRepository;
         this.passwordEncoder = passwordEncoder;
+        this.securityUtils = securityUtils;
     }
 
     public List<Usuario> listarTodos() {
@@ -49,6 +51,8 @@ public class UsuarioService {
         Usuario usuario = usuarioRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuário", "id", id));
 
+        securityUtils.verificarProprietarioOuAdmin(id, "usuário", "editar");
+
         validarEmailUnico(dto.getEmail(), id);
 
         usuario.setName(dto.getName());
@@ -72,16 +76,10 @@ public class UsuarioService {
     }
 
     public void deletarUsuario(Long id) {
-        Usuario usuarioLogado = (Usuario) SecurityContextHolder.getContext()
-                .getAuthentication()
-                .getPrincipal();
-
-        if (!usuarioLogado.getId().equals(id)) {
-            throw new ForbiddenException("Você não pode deletar outro usuário");
-        }
-
+        securityUtils.verificarProprietarioOuAdmin(id, "usuário", "deletar");
         usuarioRepository.deleteById(id);
     }
+
 
     public Usuario salvar(Usuario usuario) {
         return usuarioRepository.save(usuario);
